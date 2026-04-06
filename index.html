@@ -11,9 +11,7 @@
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════
-       HEADER / NAVBAR
-  ═══════════════════════════════════════════ -->
+  <!-- HEADER -->
   <header class="header">
     <div class="header__inner">
       <a class="logo" href="#">
@@ -23,12 +21,6 @@
       </a>
 
       <nav class="nav-actions">
-        <!-- Favorites toggle -->
-        <button class="btn-icon" id="favBtn" aria-label="View Favourites" title="Favourites">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          <span class="fav-badge" id="favBadge">0</span>
-        </button>
-
         <!-- Dark mode toggle -->
         <button class="btn-icon theme-toggle" id="themeToggle" aria-label="Toggle theme">
           <span class="theme-icon theme-icon--sun">
@@ -42,9 +34,7 @@
     </div>
   </header>
 
-  <!-- ═══════════════════════════════════════════
-       HERO / SEARCH SECTION
-  ═══════════════════════════════════════════ -->
+  <!-- HERO / SEARCH -->
   <section class="hero">
     <div class="hero__grain"></div>
     <div class="hero__inner">
@@ -54,18 +44,10 @@
         <span class="hero__title--accent">CINEMA</span>
       </h1>
 
-      <!-- Search bar -->
       <div class="search-wrap">
         <div class="search-box">
           <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input
-            type="text"
-            id="searchInput"
-            class="search-input"
-            placeholder="Search for a movie, series…"
-            autocomplete="off"
-            aria-label="Search movies"
-          />
+          <input type="text" id="searchInput" class="search-input" placeholder="Search for a movie, series…" autocomplete="off" aria-label="Search movies" />
           <button class="search-clear" id="clearBtn" aria-label="Clear search">✕</button>
         </div>
         <button class="btn-primary" id="searchBtn">Search</button>
@@ -73,27 +55,20 @@
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════
-       CONTROLS — Sort / Filter / Results count
-  ═══════════════════════════════════════════ -->
-  <section class="controls" id="controls" aria-label="Filter and Sort">
+  <!-- CONTROLS -->
+  <section class="controls" aria-label="Filter and Sort">
     <div class="controls__inner">
       <p class="results-count" id="resultsCount"></p>
-
       <div class="controls__right">
-        <!-- Type filter -->
         <div class="select-wrap">
-          <select id="typeFilter" aria-label="Filter by type" class="control-select">
+          <select id="typeFilter" class="control-select">
             <option value="">All Types</option>
             <option value="movie">Movies</option>
-            <option value="series">Series</option>
-            <option value="episode">Episodes</option>
+            <option value="tv">TV Shows</option>
           </select>
         </div>
-
-        <!-- Year filter -->
         <div class="select-wrap">
-          <select id="yearFilter" aria-label="Filter by decade" class="control-select">
+          <select id="yearFilter" class="control-select">
             <option value="">Any Year</option>
             <option value="2020">2020s</option>
             <option value="2010">2010s</option>
@@ -102,10 +77,8 @@
             <option value="1980">1980s &amp; older</option>
           </select>
         </div>
-
-        <!-- Sort -->
         <div class="select-wrap">
-          <select id="sortOrder" aria-label="Sort results" class="control-select">
+          <select id="sortOrder" class="control-select">
             <option value="default">Relevance</option>
             <option value="az">Title A → Z</option>
             <option value="za">Title Z → A</option>
@@ -117,25 +90,21 @@
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════
-       MAIN CONTENT AREA
-  ═══════════════════════════════════════════ -->
-  <main class="main" id="main">
+  <!-- MAIN -->
+  <main class="main">
 
-    <!-- Loading skeletons -->
-    <div class="skeleton-grid" id="skeletonGrid" hidden>
-      <!-- JS will inject skeleton cards -->
-    </div>
+    <!-- Skeleton loading cards -->
+    <div class="skeleton-grid" id="skeletonGrid" hidden></div>
 
-    <!-- Error / Empty state -->
+    <!-- No results message -->
     <div class="empty-state" id="emptyState" hidden>
       <div class="empty-state__icon">🎬</div>
       <h2 class="empty-state__title" id="emptyTitle">No Results Found</h2>
       <p class="empty-state__sub" id="emptySub">Try a different search term or adjust your filters.</p>
     </div>
 
-    <!-- Results grid -->
-    <div class="movie-grid" id="movieGrid" aria-label="Movie results"></div>
+    <!-- Movie cards grid -->
+    <div class="movie-grid" id="movieGrid"></div>
 
     <!-- Pagination -->
     <div class="pagination" id="pagination" hidden>
@@ -151,39 +120,10 @@
     </div>
   </main>
 
-  <!-- ═══════════════════════════════════════════
-       FAVORITES PANEL (slide-in drawer)
-  ═══════════════════════════════════════════ -->
-  <aside class="fav-panel" id="favPanel" aria-label="Favourites" role="dialog" aria-modal="true" hidden>
-    <div class="fav-panel__overlay" id="favOverlay"></div>
-    <div class="fav-panel__drawer">
-      <div class="fav-panel__header">
-        <h2>My Favourites</h2>
-        <button class="btn-icon" id="closeFavBtn" aria-label="Close favourites">✕</button>
-      </div>
-      <div class="fav-panel__body" id="favList">
-        <!-- Favourite cards injected by JS -->
-      </div>
-      <div class="fav-panel__empty" id="favEmpty" hidden>
-        <p>No favourites yet.<br/>Hit ♥ on any movie card.</p>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Movie Detail Modal -->
-  <div class="modal-overlay" id="modalOverlay" hidden>
-    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button class="modal__close" id="modalClose" aria-label="Close">✕</button>
-      <div class="modal__content" id="modalContent"></div>
-    </div>
-  </div>
-
   <!-- Toast notification -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <!-- ═══════════════════════════════════════════
-       FOOTER
-  ═══════════════════════════════════════════ -->
+  <!-- FOOTER -->
   <footer class="footer">
     <p>Browse-X &copy; 2025 &nbsp;·&nbsp; Powered by <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB API</a></p>
   </footer>

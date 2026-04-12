@@ -5,30 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Browse-X — Discover Cinema</title>
 
-  <!-- Our stylesheet -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- ── HEADER ── -->
   <header class="header">
     <div class="header__inner">
 
-      <!-- Logo -->
       <a class="logo" href="#">
         <span class="logo__bracket">[</span>
         Browse<span class="logo__accent">-X</span>
         <span class="logo__bracket">]</span>
       </a>
 
-      <!-- Dark / Light mode button -->
       <button class="btn-icon" id="themeToggle" aria-label="Toggle theme">
-        <!-- Sun icon (shown in light mode) -->
         <span class="theme-icon theme-icon--sun">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"/>
@@ -38,7 +32,6 @@
             <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
           </svg>
         </span>
-        <!-- Moon icon (shown in dark mode) -->
         <span class="theme-icon theme-icon--moon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -49,8 +42,6 @@
     </div>
   </header>
 
-
-  <!-- ── HERO / SEARCH ── -->
   <section class="hero">
     <div class="hero__grain"></div>
     <div class="hero__inner">
@@ -62,15 +53,12 @@
         <span class="hero__title--accent">CINEMA</span>
       </h1>
 
-      <!-- Search bar -->
       <div class="search-wrap">
         <div class="search-box">
-          <!-- Search icon inside the input -->
           <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
           <input type="text" id="searchInput" class="search-input" placeholder="Search for a movie, series…" autocomplete="off" />
-          <!-- Clear (X) button inside the input -->
           <button class="search-clear" id="clearBtn">✕</button>
         </div>
         <button class="btn-primary" id="searchBtn">Search</button>
@@ -80,14 +68,11 @@
   </section>
 
 
-  <!-- ── FILTER / SORT BAR ── -->
   <section class="controls">
     <div class="controls__inner">
 
-      <!-- Shows "233 results for batman" -->
       <p class="results-count" id="resultsCount"></p>
 
-      <!-- Dropdowns -->
       <div class="controls__right">
 
         <select id="typeFilter" class="control-select">
@@ -118,23 +103,18 @@
   </section>
 
 
-  <!-- ── MAIN CONTENT ── -->
   <main class="main">
 
-    <!-- Grey placeholder cards shown while loading -->
     <div class="skeleton-grid" id="skeletonGrid" hidden></div>
 
-    <!-- Message shown when no results found -->
     <div class="empty-state" id="emptyState" hidden>
       <div class="empty-state__icon">🎬</div>
       <h2 class="empty-state__title" id="emptyTitle">No Results Found</h2>
       <p class="empty-state__sub" id="emptySub">Try a different search term or adjust your filters.</p>
     </div>
 
-    <!-- Movie cards go here -->
     <div class="movie-grid" id="movieGrid"></div>
 
-    <!-- Prev / Next page buttons -->
     <div class="pagination" id="pagination" hidden>
       <button class="btn-page" id="prevBtn" disabled>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
@@ -150,13 +130,11 @@
   </main>
 
 
-  <!-- ── FOOTER ── -->
   <footer class="footer">
     <p>Browse-X &copy; 2025 &nbsp;·&nbsp; Powered by <a href="https://www.themoviedb.org/" target="_blank" rel="noopener">TMDB API</a></p>
   </footer>
 
 
-  <!-- Our JavaScript file -->
   <script src="script.js"></script>
 </body>
 </html>

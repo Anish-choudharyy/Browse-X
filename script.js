@@ -1,37 +1,19 @@
-// =====================================================
-// BROWSE-X | script.js
-// Beginner friendly — every section explained simply
-// Powered by TMDB (themoviedb.org)
-// =====================================================
-
-
-// ── YOUR API KEY ──
-// Get a free key at: https://www.themoviedb.org/settings/api
 var API_KEY = "e77858412d1571020f642635a32b79a6";
 
-// ── TMDB URL (do not change) ──
 var API_URL = "https://api.themoviedb.org/3";
 var IMG_URL = "https://image.tmdb.org/t/p/w500";
 
 
-// =====================================================
-// VARIABLES
-// These store information while the app is running
-// =====================================================
-var currentPage    = 1;      // which page of results we are on
-var totalPages     = 0;      // how many pages exist in total
-var totalResults   = 0;      // total number of results from TMDB
-var currentQuery   = "";     // the last search the user typed
-var allMovies      = [];     // all movies fetched from the API
-var filteredMovies = [];     // movies after filter/sort is applied
-var currentTheme   = "dark"; // "dark" or "light"
-var debounceTimer  = null;   // used to delay auto-search while typing
+var currentPage    = 1;
+var totalPages     = 0;
+var totalResults   = 0;
+var currentQuery   = "";
+var allMovies      = [];
+var filteredMovies = [];
+var currentTheme   = "dark";
+var debounceTimer  = null;
 
 
-// =====================================================
-// HTML ELEMENTS
-// Grab every element from the page that we need to use
-// =====================================================
 var searchInput  = document.getElementById("searchInput");
 var searchBtn    = document.getElementById("searchBtn");
 var clearBtn     = document.getElementById("clearBtn");
@@ -51,24 +33,15 @@ var yearFilter   = document.getElementById("yearFilter");
 var themeToggle  = document.getElementById("themeToggle");
 
 
-// =====================================================
-// START
-// This is the first function that runs when the page loads
-// =====================================================
 function startApp() {
-  loadTheme();      // restore saved dark/light preference
-  addRatingStyle(); // add CSS for the star rating badge on cards
-  setupListeners(); // connect all buttons and inputs to functions
-  loadTrending();   // show trending movies on the homepage
+  loadTheme();
+  addRatingStyle();
+  setupListeners(); 
+  loadTrending();
 }
 
-
-// =====================================================
-// LOAD TRENDING
-// Fetches popular movies/shows from TMDB for the homepage
-// =====================================================
 async function loadTrending() {
-  showSkeleton(); // show grey placeholder cards while loading
+  showSkeleton();
 
   try {
     var url      = API_URL + "/trending/all/week?api_key=" + API_KEY + "&language=en-US";
@@ -76,8 +49,6 @@ async function loadTrending() {
     var data     = await response.json();
 
     hideSkeleton();
-
-    // Build a list of only movies and TV (TMDB also returns people — we skip those)
     var trending = [];
     for (var i = 0; i < data.results.length; i++) {
       var item = data.results[i];
@@ -86,7 +57,6 @@ async function loadTrending() {
       }
     }
 
-    // Save and display the results
     allMovies      = trending;
     filteredMovies = trending;
     totalResults   = trending.length;
@@ -101,17 +71,11 @@ async function loadTrending() {
   }
 }
 
-
-// =====================================================
-// HANDLE SEARCH
-// Runs when the user clicks Search or presses Enter
-// =====================================================
 async function handleSearch(page) {
-  if (!page) page = 1; // use page 1 by default
+  if (!page) page = 1;
 
-  var query = searchInput.value.trim(); // get text from the search box
+  var query = searchInput.value.trim();
 
-  // Stop if the box is empty
   if (!query) {
     showEmpty("Search for a movie above", "Type a title and hit Search.");
     return;
@@ -120,39 +84,32 @@ async function handleSearch(page) {
   currentQuery = query;
   currentPage  = page;
 
-  // Reset the screen
   emptyState.hidden        = true;
   movieGrid.innerHTML      = "";
   movieGrid.style.display  = "none";
   pagination.hidden        = true;
   resultsCount.textContent = "";
 
-  showSkeleton(); // show loading animation
+  showSkeleton();
 
   try {
-    var result = await searchMovies(query, page); // call the API
+    var result = await searchMovies(query, page);
 
     hideSkeleton();
-
-    // No movies found
     if (result.movies.length === 0) {
       showEmpty("No Results Found", "Nothing matched \"" + query + "\". Try a different title.");
       return;
     }
 
-    // Save the results
     allMovies    = result.movies;
     totalResults = result.totalResults;
     totalPages   = result.totalPages;
 
-    // Apply filter + sort, then show cards
     applyFiltersAndSort();
     paintCards(filteredMovies);
 
-    // Update the results count text
     resultsCount.textContent = totalResults.toLocaleString() + " results for \"" + query + "\"";
 
-    // Show or hide prev/next buttons
     updatePagination();
 
   } catch (err) {
@@ -162,11 +119,6 @@ async function handleSearch(page) {
   }
 }
 
-
-// =====================================================
-// SEARCH API CALL
-// Sends a request to TMDB and returns the results
-// =====================================================
 async function searchMovies(query, page) {
   var url = API_URL + "/search/multi"
     + "?api_key="        + API_KEY
@@ -178,12 +130,10 @@ async function searchMovies(query, page) {
   var response = await fetch(url);
   var data     = await response.json();
 
-  // TMDB sends { success: false } when the API key is wrong
   if (data.success === false) {
     throw new Error(data.status_message);
   }
 
-  // Keep only movies and TV shows — skip people results
   var mediaOnly = [];
   for (var i = 0; i < data.results.length; i++) {
     var item = data.results[i];
@@ -192,7 +142,6 @@ async function searchMovies(query, page) {
     }
   }
 
-  // Convert each raw item into a simple object our app can use
   var cleanList = [];
   for (var j = 0; j < mediaOnly.length; j++) {
     cleanList.push(makeMovieObject(mediaOnly[j]));
@@ -205,12 +154,6 @@ async function searchMovies(query, page) {
   };
 }
 
-
-// =====================================================
-// MAKE MOVIE OBJECT
-// TMDB movies use "title" but TV shows use "name".
-// This function makes them all look the same.
-// =====================================================
 function makeMovieObject(item) {
   var isTV   = (item.media_type === "tv");
   var title  = isTV ? item.name           : item.title;
@@ -223,21 +166,16 @@ function makeMovieObject(item) {
     id:     String(item.id),
     title:  title  || "Untitled",
     year:   year,
-    type:   item.media_type,  // "movie" or "tv"
+    type:   item.media_type,
     poster: poster,
     rating: rating
   };
 }
 
 
-// =====================================================
-// FILTER AND SORT
-// Runs every time a dropdown changes
-// =====================================================
 function applyFiltersAndSort() {
-  var results = allMovies.slice(); // copy so we don't change the original
+  var results = allMovies.slice();
 
-  // Filter by type (Movie or TV Show)
   var selectedType = typeFilter.value;
   if (selectedType) {
     var byType = [];
@@ -249,7 +187,6 @@ function applyFiltersAndSort() {
     results = byType;
   }
 
-  // Filter by decade
   var selectedDecade = yearFilter.value;
   if (selectedDecade) {
     var dec    = parseInt(selectedDecade);
@@ -257,15 +194,14 @@ function applyFiltersAndSort() {
     for (var j = 0; j < results.length; j++) {
       var y = parseInt(results[j].year);
       if (dec === 1980) {
-        if (y < 1990) byYear.push(results[j]);              // 1980s and older
+        if (y < 1990) byYear.push(results[j]);
       } else {
-        if (y >= dec && y < dec + 10) byYear.push(results[j]); // exact decade
+        if (y >= dec && y < dec + 10) byYear.push(results[j]); 
       }
     }
     results = byYear;
   }
 
-  // Sort
   var order = sortOrder.value;
   if (order === "az") {
     results.sort(function(a, b) { return a.title.localeCompare(b.title); });
@@ -281,18 +217,12 @@ function applyFiltersAndSort() {
 }
 
 
-// =====================================================
-// PAINT CARDS
-// Puts movie cards onto the page
-// =====================================================
 function paintCards(movies) {
-  // Nothing to show after filtering
   if (movies.length === 0) {
     showEmpty("No Results After Filtering", "Try removing or adjusting your filters.");
     return;
   }
 
-  // Build all card HTML and put it in the grid
   var html = "";
   for (var i = 0; i < movies.length; i++) {
     html += makeCardHTML(movies[i]);
@@ -303,17 +233,11 @@ function paintCards(movies) {
   emptyState.hidden       = true;
 }
 
-
-// =====================================================
-// MAKE CARD HTML
-// Builds the HTML string for one movie card
-// =====================================================
 function makeCardHTML(movie) {
   var badgeClass  = (movie.type === "tv") ? "card__badge--series" : "card__badge--movie";
   var typeLabel   = (movie.type === "tv") ? "TV" : "Movie";
   var ratingBadge = (movie.rating !== "N/A") ? '<span class="card__rating">★ ' + movie.rating + '</span>' : "";
 
-  // Show poster image or a fallback placeholder
   var posterHTML;
   if (movie.poster !== "N/A") {
     posterHTML = '<img class="card__poster" src="' + movie.poster + '" alt="' + movie.title + '" loading="lazy">';
@@ -337,10 +261,6 @@ function makeCardHTML(movie) {
 }
 
 
-// =====================================================
-// SKELETON LOADING
-// Shows and hides grey placeholder cards while loading
-// =====================================================
 function showSkeleton() {
   var html = "";
   for (var i = 0; i < 20; i++) {
@@ -360,11 +280,6 @@ function hideSkeleton() {
   skeletonGrid.hidden = true;
 }
 
-
-// =====================================================
-// EMPTY STATE
-// Shows a message when there are no results
-// =====================================================
 function showEmpty(title, sub) {
   hideSkeleton();
   movieGrid.innerHTML      = "";
@@ -375,13 +290,8 @@ function showEmpty(title, sub) {
   pagination.hidden        = true;
 }
 
-
-// =====================================================
-// PAGINATION
-// Updates the Prev / Next buttons
-// =====================================================
 function updatePagination() {
-  var maxPages = Math.min(totalPages, 500); // TMDB allows max 500 pages
+  var maxPages = Math.min(totalPages, 500);
 
   if (maxPages <= 1) {
     pagination.hidden = true;
@@ -395,17 +305,13 @@ function updatePagination() {
 }
 
 
-// =====================================================
-// THEME — dark / light mode
-// =====================================================
 function toggleTheme() {
   currentTheme = (currentTheme === "dark") ? "light" : "dark";
   applyTheme(currentTheme);
-  localStorage.setItem("bx_theme", currentTheme); // save preference
+  localStorage.setItem("bx_theme", currentTheme);
 }
 
 function applyTheme(theme) {
-  // Setting data-theme on <html> makes all CSS variables switch automatically
   document.documentElement.setAttribute("data-theme", theme);
 }
 
@@ -415,24 +321,13 @@ function loadTheme() {
   applyTheme(currentTheme);
 }
 
-
-// =====================================================
-// DEBOUNCE
-// Waits until the user stops typing before searching.
-// Without this, a new API call would fire for every letter typed.
-// =====================================================
 function debouncedSearch() {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(function() {
     handleSearch(1);
-  }, 500); // wait 500ms after the last keystroke
+  }, 500);
 }
 
-
-// =====================================================
-// STAR RATING BADGE STYLE
-// Adds the CSS for the small rating badge on each card
-// =====================================================
 function addRatingStyle() {
   var style = document.createElement("style");
   style.textContent =
@@ -452,35 +347,25 @@ function addRatingStyle() {
   document.head.appendChild(style);
 }
 
-
-// =====================================================
-// EVENT LISTENERS
-// Connect every button and input to the right function
-// =====================================================
 function setupListeners() {
 
-  // User types in the search box
   searchInput.addEventListener("input", function() {
-    // Show X button when there is text, hide it when empty
     if (searchInput.value.length > 0) {
       clearBtn.classList.add("visible");
     } else {
       clearBtn.classList.remove("visible");
     }
-    debouncedSearch(); // auto-search after user stops typing
+    debouncedSearch();
   });
 
-  // User clicks the Search button
   searchBtn.addEventListener("click", function() {
     handleSearch(1);
   });
 
-  // User presses Enter in the search box
   searchInput.addEventListener("keydown", function(e) {
     if (e.key === "Enter") handleSearch(1);
   });
 
-  // User clicks the X button to clear the search
   clearBtn.addEventListener("click", function() {
     searchInput.value        = "";
     clearBtn.classList.remove("visible");
@@ -495,7 +380,6 @@ function setupListeners() {
     filteredMovies = [];
   });
 
-  // Sort dropdown changed
   sortOrder.addEventListener("change", function() {
     if (allMovies.length > 0) {
       applyFiltersAndSort();
@@ -503,7 +387,6 @@ function setupListeners() {
     }
   });
 
-  // Type filter changed (Movie / TV Show)
   typeFilter.addEventListener("change", function() {
     if (allMovies.length > 0) {
       applyFiltersAndSort();
@@ -511,7 +394,6 @@ function setupListeners() {
     }
   });
 
-  // Year filter changed
   yearFilter.addEventListener("change", function() {
     if (allMovies.length > 0) {
       applyFiltersAndSort();
@@ -519,7 +401,6 @@ function setupListeners() {
     }
   });
 
-  // Previous page button
   prevBtn.addEventListener("click", function() {
     if (currentPage > 1) {
       handleSearch(currentPage - 1);
@@ -527,7 +408,6 @@ function setupListeners() {
     }
   });
 
-  // Next page button
   nextBtn.addEventListener("click", function() {
     if (currentPage < Math.min(totalPages, 500)) {
       handleSearch(currentPage + 1);
@@ -535,14 +415,10 @@ function setupListeners() {
     }
   });
 
-  // Dark / Light mode toggle
   themeToggle.addEventListener("click", function() {
     toggleTheme();
   });
 }
 
 
-// =====================================================
-// RUN THE APP
-// =====================================================
 startApp();
